@@ -1,7 +1,7 @@
 
 import React from 'react';
 import MenuItem from './MenuItem';
-import { MenuCategory as MenuCategoryType, MenuItem as MenuItemType } from '@/utils/localStorage';
+import { MenuCategory as MenuCategoryType, MenuItem as MenuItemType } from '@/utils/types';
 import FadeIn from '@/components/ui/FadeIn';
 
 interface MenuCategoryProps {

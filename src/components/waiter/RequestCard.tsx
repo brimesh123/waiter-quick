@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { WaiterRequest, MenuItem } from '@/utils/localStorage';
+import { TableRequest, MenuItem } from '@/utils/types';
 import { useRestaurant } from '@/context/RestaurantContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { CheckCircle, Clock, CreditCard, FileText, Bell, MessageSquare, Loader2 
 import { cn } from '@/lib/utils';
 
 interface RequestCardProps {
-  request: WaiterRequest;
+  request: TableRequest;
 }
 
 const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
@@ -62,7 +62,7 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
   };
 
   // Handle status update
-  const handleUpdateStatus = (newStatus: WaiterRequest['status']) => {
+  const handleUpdateStatus = (newStatus: 'pending' | 'acknowledged' | 'completed') => {
     setIsLoading(true);
     
     // Simulate a network delay (remove in production)
@@ -86,7 +86,7 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="font-medium flex items-center">
-                Table {request.tableNumber}
+                Table {request.tableNumber || request.tableId}
                 {request.status === 'pending' && (
                   <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse ml-2"></span>
                 )}

@@ -8,12 +8,13 @@ import RequestsTable from "@/components/waiter/RequestsTable";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useRestaurant } from "@/context/RestaurantContext";
+import { TableRequest } from "@/utils/types";
 
 const Waiter = () => {
   const { toast } = useToast();
   const { restaurant, tableRequests, markRequestComplete } = useRestaurant();
-  const [activeRequests, setActiveRequests] = useState([]);
-  const [completedRequests, setCompletedRequests] = useState([]);
+  const [activeRequests, setActiveRequests] = useState<TableRequest[]>([]);
+  const [completedRequests, setCompletedRequests] = useState<TableRequest[]>([]);
 
   useEffect(() => {
     // Filter requests into active and completed
@@ -36,7 +37,7 @@ const Waiter = () => {
         subtitle="Waiter Dashboard" 
       />
       
-      <main className="flex-1 container mx-auto px-4 py-6">
+      <main className="flex-1 container mx-auto px-4 py-6 mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
           <Card>
             <CardHeader className="pb-2">

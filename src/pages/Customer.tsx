@@ -24,16 +24,6 @@ const Customer = () => {
     }
   }, [tableId]);
 
-  const handleCallWaiter = (reason: string) => {
-    toast({
-      title: "Waiter called",
-      description: `A waiter will be with you shortly. Reason: ${reason}`,
-    });
-    
-    // In a real app, this would call an API
-    console.log(`Waiter called to table ${currentTableId} for ${reason}`);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Header 
@@ -41,9 +31,9 @@ const Customer = () => {
         subtitle={`Table ${getTableNumber(currentTableId)}`} 
       />
       
-      <main className="flex-1 container mx-auto px-4 py-6">
+      <main className="flex-1 container mx-auto px-4 py-6 mt-20">
         <Card className="mb-6 p-4 shadow-sm">
-          <CallWaiterButton onCall={handleCallWaiter} />
+          <CallWaiterButton tableNumber={currentTableId} />
         </Card>
         
         <Tabs defaultValue="menu" className="w-full">
@@ -53,7 +43,7 @@ const Customer = () => {
           </TabsList>
           
           <TabsContent value="menu" className="mt-0">
-            <Menu />
+            <Menu tableNumber={currentTableId} />
           </TabsContent>
           
           <TabsContent value="about" className="mt-0">
@@ -62,7 +52,7 @@ const Customer = () => {
               <p className="mb-4">{restaurant.description}</p>
               <div className="mt-8">
                 <h3 className="text-xl font-semibold mb-4">Find Us Online</h3>
-                <Linktree links={restaurant.socialLinks} />
+                <Linktree />
               </div>
             </Card>
           </TabsContent>

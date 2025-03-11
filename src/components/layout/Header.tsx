@@ -9,9 +9,10 @@ import FadeIn from '@/components/ui/FadeIn';
 interface HeaderProps {
   backLink?: string;
   title?: string;
+  subtitle?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ backLink, title }) => {
+export const Header: React.FC<HeaderProps> = ({ backLink, title, subtitle }) => {
   const location = useLocation();
   const { restaurant } = useRestaurant();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -57,9 +58,9 @@ export const Header: React.FC<HeaderProps> = ({ backLink, title }) => {
             </Link>
           ) : (
             <Link to="/" className="flex items-center">
-              {restaurant?.logo ? (
+              {restaurant?.logoUrl ? (
                 <img
-                  src={restaurant.logo}
+                  src={restaurant.logoUrl}
                   alt={restaurant.name}
                   className="h-10 w-10 object-cover rounded-full mr-3"
                 />
@@ -68,7 +69,12 @@ export const Header: React.FC<HeaderProps> = ({ backLink, title }) => {
                   {restaurant?.name.substring(0, 1) || 'W'}
                 </div>
               )}
-              <span className="font-semibold text-lg">{restaurant?.name || title || 'Waiter Quick'}</span>
+              <span className="font-semibold text-lg">{title || restaurant?.name || 'Waiter Quick'}</span>
+              {subtitle && (
+                <span className="ml-2 text-sm text-muted-foreground">
+                  {subtitle}
+                </span>
+              )}
             </Link>
           )}
         </div>
@@ -105,9 +111,9 @@ export const Header: React.FC<HeaderProps> = ({ backLink, title }) => {
           <div className="fixed inset-0 bg-background/95 backdrop-blur-sm z-50 flex flex-col md:hidden">
             <div className="flex justify-between items-center p-4 border-b">
               <Link to="/" className="flex items-center" onClick={() => setMobileMenuOpen(false)}>
-                {restaurant?.logo ? (
+                {restaurant?.logoUrl ? (
                   <img
-                    src={restaurant.logo}
+                    src={restaurant.logoUrl}
                     alt={restaurant.name}
                     className="h-10 w-10 object-cover rounded-full mr-3"
                   />

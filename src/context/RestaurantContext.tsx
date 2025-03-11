@@ -4,25 +4,26 @@ import {
   Restaurant, 
   MenuCategory, 
   MenuItem, 
-  TableRequest, 
-  demoRestaurant, 
-  demoMenuCategories, 
-  demoMenuItems, 
-  demoTableRequests 
-} from '@/utils/demoData';
+  TableRequest 
+} from '@/utils/types';
 import { getStorageItem, setStorageItem } from '@/utils/localStorage';
+import { demoRestaurant, demoMenuCategories, demoMenuItems, demoTableRequests } from '@/utils/demoData';
 
 type RestaurantContextType = {
   restaurant: Restaurant;
   updateRestaurantInfo: (info: Partial<Restaurant>) => void;
   menuCategories: MenuCategory[];
+  categories: MenuCategory[];
   menuItems: MenuItem[];
   addMenuItem: (item: MenuItem) => void;
   updateMenuItem: (id: string, updates: Partial<MenuItem>) => void;
   removeMenuItem: (id: string) => void;
   tableRequests: TableRequest[];
+  waiterRequests: TableRequest[];
   addTableRequest: (tableId: string, reason: string) => void;
+  requestWaiter: (tableId: string, type: 'service' | 'bill' | 'order', menuItemId?: string, note?: string) => void;
   markRequestComplete: (requestId: string) => void;
+  updateRequestStatus: (requestId: string, status: 'pending' | 'acknowledged' | 'completed') => void;
   getTableNumber: (tableId: string) => number;
 };
 
@@ -91,6 +92,24 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       reason,
       timestamp: new Date(),
       completed: false,
+      status: 'pending',
+      type: 'service'
+    };
+    setTableRequests(prev => [...prev, newRequest]);
+  };
+
+  const requestWaiter = (tableId: string, type: 'service' | 'bill' | 'order', menuItemId?: string, note?: string) => {
+    const newRequest: TableRequest = {
+      id: Date.now().toString(),
+      tableId,
+      reason: type,
+      menuItemId,
+      note,
+      timestamp: new Date(),
+      completed: false,
+      status: 'pending',
+      type,
+      tableNumber: tableId
     };
     setTableRequests(prev => [...prev, newRequest]);
   };
@@ -99,7 +118,22 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setTableRequests(prev => 
       prev.map(request => 
         request.id === requestId 
-          ? { ...request, completed: true, completedAt: new Date() } 
+          ? { ...request, completed: true, completedAt: new Date(), status: 'completed' } 
+          : request
+      )
+    );
+  };
+
+  const updateRequestStatus = (requestId: string, status: 'pending' | 'acknowledged' | 'completed') => {
+    setTableRequests(prev => 
+      prev.map(request => 
+        request.id === requestId 
+          ? { 
+              ...request, 
+              status,
+              completed: status === 'completed',
+              completedAt: status === 'completed' ? new Date() : request.completedAt
+            } 
           : request
       )
     );
@@ -115,13 +149,17 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     restaurant,
     updateRestaurantInfo,
     menuCategories,
+    categories: menuCategories, // Alias for consistency with component expectations
     menuItems,
     addMenuItem,
     updateMenuItem,
     removeMenuItem,
     tableRequests,
+    waiterRequests: tableRequests, // Alias for consistency with component expectations
     addTableRequest,
+    requestWaiter,
     markRequestComplete,
+    updateRequestStatus,
     getTableNumber,
   };
 

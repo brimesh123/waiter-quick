@@ -17,7 +17,7 @@ const Admin = () => {
   const [newItemCategory, setNewItemCategory] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
 
-  const handleAddMenuItem = (e) => {
+  const handleAddMenuItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newItemName || !newItemPrice || !newItemCategory) {
       toast({
@@ -35,6 +35,7 @@ const Admin = () => {
       category: newItemCategory,
       description: newItemDescription,
       image: "",
+      available: true
     });
 
     toast({
@@ -55,7 +56,7 @@ const Admin = () => {
         subtitle="Restaurant Management" 
       />
       
-      <main className="flex-1 container mx-auto px-4 py-6">
+      <main className="flex-1 container mx-auto px-4 py-6 mt-20">
         <Tabs defaultValue="menu" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="menu">Menu Management</TabsTrigger>

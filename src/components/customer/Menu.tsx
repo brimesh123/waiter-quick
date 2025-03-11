@@ -15,7 +15,6 @@ interface MenuProps {
 const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
   const { categories, menuItems } = useRestaurant();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Handle search
   const filteredItems = searchQuery

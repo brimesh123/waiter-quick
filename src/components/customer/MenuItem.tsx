@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MenuItem as MenuItemType } from '@/utils/localStorage';
+import { MenuItem as MenuItemType } from '@/utils/types';
 import { useRestaurant } from '@/context/RestaurantContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

@@ -24,31 +24,31 @@ const Linktree: React.FC = () => {
   const links: SocialLink[] = [
     {
       name: 'Website',
-      url: socialLinks.website,
+      url: socialLinks?.website,
       icon: <Globe className="h-5 w-5" />,
       color: 'bg-gradient-to-r from-blue-500 to-cyan-500',
     },
     {
       name: 'Instagram',
-      url: socialLinks.instagram,
+      url: socialLinks?.instagram,
       icon: <Instagram className="h-5 w-5" />,
       color: 'bg-gradient-to-r from-purple-500 to-pink-500',
     },
     {
       name: 'Facebook',
-      url: socialLinks.facebook,
+      url: socialLinks?.facebook,
       icon: <Facebook className="h-5 w-5" />,
       color: 'bg-gradient-to-r from-blue-600 to-blue-400',
     },
     {
       name: 'Twitter',
-      url: socialLinks.twitter,
+      url: socialLinks?.twitter,
       icon: <Twitter className="h-5 w-5" />,
       color: 'bg-gradient-to-r from-sky-500 to-blue-500',
     },
     {
       name: 'Google Reviews',
-      url: socialLinks.google,
+      url: socialLinks?.google,
       icon: <Star className="h-5 w-5" />,
       color: 'bg-gradient-to-r from-amber-500 to-orange-500',
     },

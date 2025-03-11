@@ -18,22 +18,22 @@ export const Footer: React.FC<FooterProps> = ({ className, minimal = false }) =>
   const socialLinks = [
     {
       name: 'Website',
-      url: restaurant?.socialLinks.website,
+      url: restaurant?.socialLinks?.website,
       icon: <Globe className="w-5 h-5" />,
     },
     {
       name: 'Instagram',
-      url: restaurant?.socialLinks.instagram,
+      url: restaurant?.socialLinks?.instagram,
       icon: <Instagram className="w-5 h-5" />,
     },
     {
       name: 'Facebook',
-      url: restaurant?.socialLinks.facebook,
+      url: restaurant?.socialLinks?.facebook,
       icon: <Facebook className="w-5 h-5" />,
     },
     {
       name: 'Twitter',
-      url: restaurant?.socialLinks.twitter,
+      url: restaurant?.socialLinks?.twitter,
       icon: <Twitter className="w-5 h-5" />,
     },
   ].filter(link => link.url);
@@ -52,9 +52,9 @@ export const Footer: React.FC<FooterProps> = ({ className, minimal = false }) =>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <Link to="/" className="flex items-center mb-4">
-              {restaurant?.logo ? (
+              {restaurant?.logoUrl ? (
                 <img
-                  src={restaurant.logo}
+                  src={restaurant.logoUrl}
                   alt={restaurant.name}
                   className="h-10 w-10 object-cover rounded-full mr-3"
                 />
