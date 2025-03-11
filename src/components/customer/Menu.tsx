@@ -16,6 +16,9 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
   const { categories, menuItems } = useRestaurant();
   const [searchQuery, setSearchQuery] = useState('');
 
+  console.log("Menu component categories:", categories);
+  console.log("Menu component menuItems:", menuItems);
+
   // Handle search
   const filteredItems = searchQuery
     ? menuItems.filter(
@@ -30,6 +33,14 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
     category,
     items: menuItems.filter((item) => item.category === category.id && item.available),
   }));
+
+  if (categories.length === 0) {
+    return (
+      <div className="w-full py-12 text-center">
+        <p className="text-muted-foreground">No menu categories available</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -118,7 +129,7 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
         </div>
       ) : (
         // Show regular menu
-        <Tabs defaultValue={categories[0]?.id} className="w-full">
+        <Tabs defaultValue={categories.length > 0 ? categories[0]?.id : ''} className="w-full">
           <TabsList className="mb-6 flex w-full h-auto overflow-x-auto scrollbar-hide justify-start p-1 space-x-1">
             {categories.map((category) => (
               <TabsTrigger

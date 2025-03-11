@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRestaurant } from '@/context/RestaurantContext';
 import { Bell, CreditCard, FileText, Loader2, CheckCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -32,6 +33,7 @@ const CallWaiterButton: React.FC<CallWaiterButtonProps> = ({
   className,
 }) => {
   const { requestWaiter } = useRestaurant();
+  const { toast } = useToast();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [requestType, setRequestType] = useState<'service' | 'bill' | 'order'>('service');
   const [note, setNote] = useState('');
@@ -40,10 +42,17 @@ const CallWaiterButton: React.FC<CallWaiterButtonProps> = ({
   const handleRequest = () => {
     setStatus('loading');
     
-    // Simulate network delay (remove in production)
-    setTimeout(() => {
+    try {
+      // Send the request without artificial delay
       requestWaiter(tableNumber, requestType, undefined, note);
+      console.log(`Waiter request sent for table ${tableNumber}, type: ${requestType}, note: ${note}`);
+      
       setStatus('success');
+      
+      toast({
+        title: "Request sent",
+        description: "A waiter will be with you shortly.",
+      });
       
       // Reset and close after 2 seconds
       setTimeout(() => {
@@ -51,7 +60,16 @@ const CallWaiterButton: React.FC<CallWaiterButtonProps> = ({
         setDialogOpen(false);
         setNote('');
       }, 2000);
-    }, 1000);
+    } catch (error) {
+      console.error("Error sending request:", error);
+      setStatus('idle');
+      
+      toast({
+        title: "Request failed",
+        description: "There was a problem sending your request. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const requestOptions = [

@@ -18,11 +18,13 @@ const Waiter = () => {
 
   useEffect(() => {
     // Filter requests into active and completed
+    console.log("All table requests:", tableRequests);
     setActiveRequests(tableRequests.filter(req => !req.completed));
     setCompletedRequests(tableRequests.filter(req => req.completed));
   }, [tableRequests]);
 
   const handleMarkComplete = (requestId: string) => {
+    console.log("Marking request complete:", requestId);
     markRequestComplete(requestId);
     toast({
       title: "Request completed",

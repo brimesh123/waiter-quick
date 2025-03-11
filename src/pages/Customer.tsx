@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -21,8 +21,16 @@ const Customer = () => {
     // If table ID is provided in URL, use it
     if (tableId) {
       setCurrentTableId(tableId);
+      console.log("Table ID set to:", tableId);
     }
   }, [tableId]);
+
+  // Log the categories and menu items when the component mounts
+  useEffect(() => {
+    const { categories, menuItems } = useRestaurant();
+    console.log("Categories:", categories);
+    console.log("Menu Items:", menuItems);
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

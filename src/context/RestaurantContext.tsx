@@ -47,6 +47,15 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     getStorageItem('tableRequests', demoTableRequests)
   );
 
+  // Log initial data
+  useEffect(() => {
+    console.log("Restaurant Context Initialized");
+    console.log("Restaurant:", restaurant);
+    console.log("Menu Categories:", menuCategories);
+    console.log("Menu Items:", menuItems);
+    console.log("Table Requests:", tableRequests);
+  }, []);
+
   // Update localStorage when state changes
   useEffect(() => {
     setStorageItem('restaurant', restaurant);
@@ -93,8 +102,10 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       timestamp: new Date(),
       completed: false,
       status: 'pending',
-      type: 'service'
+      type: 'service',
+      tableNumber: tableId
     };
+    console.log("Adding table request:", newRequest);
     setTableRequests(prev => [...prev, newRequest]);
   };
 
@@ -111,10 +122,12 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       type,
       tableNumber: tableId
     };
+    console.log("Requesting waiter:", newRequest);
     setTableRequests(prev => [...prev, newRequest]);
   };
 
   const markRequestComplete = (requestId: string) => {
+    console.log("Marking request complete:", requestId);
     setTableRequests(prev => 
       prev.map(request => 
         request.id === requestId 
@@ -125,6 +138,7 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const updateRequestStatus = (requestId: string, status: 'pending' | 'acknowledged' | 'completed') => {
+    console.log("Updating request status:", requestId, status);
     setTableRequests(prev => 
       prev.map(request => 
         request.id === requestId 
