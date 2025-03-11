@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useRestaurant } from "@/context/RestaurantContext";
+import QRCode from "@/components/ui/QRCode";
 
 const Admin = () => {
   const { toast } = useToast();
@@ -16,6 +17,58 @@ const Admin = () => {
   const [newItemPrice, setNewItemPrice] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("");
   const [newItemDescription, setNewItemDescription] = useState("");
+  const [numberOfTables, setNumberOfTables] = useState(8);
+
+  // Get the current domain/hostname for QR code URLs
+  const getBaseUrl = () => {
+    return window.location.origin;
+  };
+
+  const getQrCodeUrl = (tableId: number) => {
+    return `${getBaseUrl()}/customer/${tableId}`;
+  };
+
+  const handleDownloadQRCode = (tableId: number) => {
+    const svg = document.getElementById(`qr-code-${tableId}`)?.querySelector('svg');
+    if (!svg) {
+      toast({
+        title: "Error",
+        description: "QR code not found",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Create a canvas element
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    // Set canvas dimensions
+    const svgRect = svg.getBoundingClientRect();
+    canvas.width = svgRect.width;
+    canvas.height = svgRect.height;
+
+    // Create an image from the SVG
+    const img = new Image();
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    img.onload = function() {
+      // Draw the image onto the canvas
+      ctx.drawImage(img, 0, 0);
+      URL.revokeObjectURL(svgUrl);
+
+      // Download the canvas as an image
+      const link = document.createElement("a");
+      link.download = `table-${tableId}-qr.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    };
+
+    img.src = svgUrl;
+  };
 
   const handleAddMenuItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,19 +247,58 @@ const Admin = () => {
               <CardHeader>
                 <CardTitle>Table Management</CardTitle>
                 <CardDescription>
-                  Configure your restaurant tables
+                  Configure your restaurant tables and generate QR codes
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground mb-4">Generate QR codes for each table to allow customers to access the digital menu.</p>
+                <div className="mb-6">
+                  <label className="text-sm font-medium mb-2 block">Number of Tables</label>
+                  <div className="flex items-center gap-4">
+                    <Input 
+                      type="number" 
+                      min="1"
+                      max="100"
+                      value={numberOfTables}
+                      onChange={(e) => setNumberOfTables(parseInt(e.target.value) || 1)}
+                      className="w-32"
+                    />
+                    <Button variant="outline">Update</Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Set the number of tables in your restaurant
+                  </p>
+                </div>
+
+                <p className="text-muted-foreground mb-4">
+                  Generate QR codes for each table to allow customers to access the digital menu.
+                  Customers will scan these QR codes to access their table-specific menu.
+                </p>
+                
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {Array.from({ length: 8 }, (_, i) => (
+                  {Array.from({ length: numberOfTables }, (_, i) => (
                     <Card key={i} className="p-4 text-center">
                       <p className="font-bold text-xl mb-2">Table {i + 1}</p>
-                      <div className="bg-gray-200 w-full aspect-square mb-2 flex items-center justify-center">
-                        <p className="text-xs text-gray-500">QR Code</p>
+                      <div 
+                        id={`qr-code-${i + 1}`} 
+                        className="bg-white w-full aspect-square mb-2 flex items-center justify-center p-2"
+                      >
+                        <QRCode 
+                          value={getQrCodeUrl(i + 1)} 
+                          size={120}
+                          level="M"
+                        />
                       </div>
-                      <Button variant="outline" size="sm" className="w-full">Download</Button>
+                      <p className="text-xs text-muted-foreground mb-2 break-all px-2">
+                        {getQrCodeUrl(i + 1)}
+                      </p>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => handleDownloadQRCode(i + 1)}
+                      >
+                        Download
+                      </Button>
                     </Card>
                   ))}
                 </div>
