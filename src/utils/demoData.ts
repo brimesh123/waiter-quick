@@ -1,168 +1,216 @@
 
-import {
-  MenuItem,
-  MenuCategory,
-  Restaurant,
-  menuItemsStorage,
-  menuCategoriesStorage,
-  restaurantStorage,
-} from './localStorage';
+export type MenuItem = {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  image?: string;
+  category: string;
+};
 
-// Generate a UUID
-const generateId = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
+export type MenuCategory = {
+  id: string;
+  name: string;
+  description?: string;
+  items?: MenuItem[];
+};
+
+export type TableRequest = {
+  id: string;
+  tableId: string;
+  reason: string;
+  timestamp: Date;
+  completed: boolean;
+  completedAt?: Date;
+};
+
+export type SocialLink = {
+  platform: string;
+  url: string;
+  label: string;
+};
+
+export type Restaurant = {
+  id: string;
+  name: string;
+  description: string;
+  logoUrl: string;
+  socialLinks: SocialLink[];
 };
 
 // Demo restaurant data
-const demoRestaurant: Restaurant = {
-  id: generateId(),
-  name: 'Bistro Nouveau',
-  logo: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=200&auto=format&fit=crop',
-  theme: {
-    primaryColor: '#1E88E5',
-    secondaryColor: '#E0E0E0',
-    font: 'Inter',
-  },
-  socialLinks: {
-    website: 'https://example.com',
-    instagram: 'https://instagram.com/bistronouveau',
-    facebook: 'https://facebook.com/bistronouveau',
-    google: 'https://g.page/bistronouveau',
-  },
+export const demoRestaurant: Restaurant = {
+  id: "1",
+  name: "Bella Cucina",
+  description: "Authentic Italian cuisine prepared with the freshest ingredients. Our chefs bring the flavors of Italy to your table with traditional recipes and modern creativity.",
+  logoUrl: "/placeholder.svg", // Update with a real logo later
+  socialLinks: [
+    { platform: "instagram", url: "https://instagram.com", label: "Follow us on Instagram" },
+    { platform: "facebook", url: "https://facebook.com", label: "Like us on Facebook" },
+    { platform: "google", url: "https://google.com/maps", label: "Google Reviews" },
+    { platform: "website", url: "https://example.com", label: "Visit our website" },
+  ]
 };
 
-// Demo menu categories
-const demoCategories: MenuCategory[] = [
-  { id: generateId(), name: 'Starters', order: 1 },
-  { id: generateId(), name: 'Main Courses', order: 2 },
-  { id: generateId(), name: 'Sides', order: 3 },
-  { id: generateId(), name: 'Desserts', order: 4 },
-  { id: generateId(), name: 'Drinks', order: 5 },
+// Demo menu categories and items
+export const demoMenuCategories: MenuCategory[] = [
+  {
+    id: "appetizers",
+    name: "Appetizers",
+    description: "Start your meal with these delicious appetizers",
+    items: []
+  },
+  {
+    id: "pasta",
+    name: "Pasta",
+    description: "Handmade pasta dishes with authentic Italian sauces",
+    items: []
+  },
+  {
+    id: "pizza",
+    name: "Pizza",
+    description: "Wood-fired pizzas with a variety of toppings",
+    items: []
+  },
+  {
+    id: "main-courses",
+    name: "Main Courses",
+    description: "Hearty main dishes featuring the finest ingredients",
+    items: []
+  },
+  {
+    id: "desserts",
+    name: "Desserts",
+    description: "Sweet treats to end your meal",
+    items: []
+  },
+  {
+    id: "drinks",
+    name: "Drinks",
+    description: "Beverages and cocktails",
+    items: []
+  }
 ];
 
-// Helper function to get category ID by name
-const getCategoryIdByName = (name: string): string => {
-  const category = demoCategories.find(cat => cat.name === name);
-  return category ? category.id : demoCategories[0].id;
-};
-
 // Demo menu items
-const generateDemoMenuItems = (): MenuItem[] => {
-  return [
-    {
-      id: generateId(),
-      name: 'Goat Cheese Salad',
-      description: 'Mixed greens with warm goat cheese, walnuts, and balsamic vinaigrette',
-      price: 12.99,
-      image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Starters'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'French Onion Soup',
-      description: 'Traditional onion soup with melted Gruyère cheese',
-      price: 9.99,
-      image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Starters'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Beef Tenderloin',
-      description: 'Grilled beef tenderloin with red wine reduction and seasonal vegetables',
-      price: 34.99,
-      image: 'https://images.unsplash.com/photo-1546241072-48010ad2862c?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Main Courses'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Roasted Salmon',
-      description: 'Oven-roasted salmon with lemon butter sauce and asparagus',
-      price: 28.99,
-      image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Main Courses'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Mushroom Risotto',
-      description: 'Creamy Arborio rice with wild mushrooms and Parmesan',
-      price: 22.99,
-      image: 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Main Courses'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Truffle Fries',
-      description: 'Crispy fries tossed with truffle oil and Parmesan',
-      price: 8.99,
-      image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Sides'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Chocolate Soufflé',
-      description: 'Warm chocolate soufflé with vanilla ice cream',
-      price: 11.99,
-      image: 'https://images.unsplash.com/photo-1579306194872-64d3b7c47e63?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Desserts'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Crème Brûlée',
-      description: 'Classic French custard with caramelized sugar top',
-      price: 9.99,
-      image: 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Desserts'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'House Red Wine',
-      description: 'Glass of our selected cabernet sauvignon',
-      price: 12.99,
-      image: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Drinks'),
-      available: true,
-    },
-    {
-      id: generateId(),
-      name: 'Sparkling Water',
-      description: 'Bottle of premium sparkling mineral water',
-      price: 4.99,
-      image: 'https://images.unsplash.com/photo-1603394151851-6fa1fb569a8d?q=80&w=300&auto=format&fit=crop',
-      category: getCategoryIdByName('Drinks'),
-      available: true,
-    },
-  ];
-};
-
-// Initialize demo data in local storage
-export const initializeDemoData = (): void => {
-  // Check if data already exists
-  const existingRestaurant = restaurantStorage.get();
-  
-  if (!existingRestaurant) {
-    // Save restaurant data
-    restaurantStorage.save(demoRestaurant);
-    
-    // Save categories
-    menuCategoriesStorage.saveAll(demoCategories);
-    
-    // Save menu items
-    menuItemsStorage.saveAll(generateDemoMenuItems());
-    
-    console.log('Demo data initialized successfully!');
-  } else {
-    console.log('Data already exists in localStorage. Skipping initialization.');
+export const demoMenuItems: MenuItem[] = [
+  {
+    id: "1",
+    name: "Bruschetta",
+    price: 8.99,
+    description: "Grilled bread rubbed with garlic and topped with diced tomatoes, fresh basil, and olive oil",
+    category: "appetizers",
+  },
+  {
+    id: "2",
+    name: "Caprese Salad",
+    price: 10.99,
+    description: "Fresh mozzarella, tomatoes, and sweet basil, seasoned with salt and olive oil",
+    category: "appetizers",
+  },
+  {
+    id: "3",
+    name: "Spaghetti Carbonara",
+    price: 15.99,
+    description: "Spaghetti with a creamy sauce of eggs, cheese, pancetta, and black pepper",
+    category: "pasta",
+  },
+  {
+    id: "4",
+    name: "Fettuccine Alfredo",
+    price: 14.99,
+    description: "Fettuccine tossed with butter and Parmesan cheese",
+    category: "pasta",
+  },
+  {
+    id: "5",
+    name: "Margherita Pizza",
+    price: 12.99,
+    description: "Tomato sauce, mozzarella, and basil",
+    category: "pizza",
+  },
+  {
+    id: "6",
+    name: "Pepperoni Pizza",
+    price: 13.99,
+    description: "Tomato sauce, mozzarella, and pepperoni",
+    category: "pizza",
+  },
+  {
+    id: "7",
+    name: "Chicken Parmesan",
+    price: 17.99,
+    description: "Breaded chicken breast topped with tomato sauce and mozzarella",
+    category: "main-courses",
+  },
+  {
+    id: "8",
+    name: "Tiramisu",
+    price: 8.99,
+    description: "Coffee-flavored Italian dessert made of ladyfingers dipped in coffee, layered with a whipped mixture of eggs, sugar, and mascarpone cheese",
+    category: "desserts",
+  },
+  {
+    id: "9",
+    name: "House Red Wine",
+    price: 7.99,
+    description: "Glass of our house red wine",
+    category: "drinks",
+  },
+  {
+    id: "10",
+    name: "Espresso",
+    price: 3.99,
+    description: "Single shot of espresso",
+    category: "drinks",
   }
-};
+];
+
+// Demo table requests
+export const demoTableRequests: TableRequest[] = [
+  {
+    id: "1",
+    tableId: "1",
+    reason: "Need assistance with menu",
+    timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
+    completed: false,
+  },
+  {
+    id: "2",
+    tableId: "3",
+    reason: "Ready to order",
+    timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
+    completed: false,
+  },
+  {
+    id: "3",
+    tableId: "5",
+    reason: "Request the check",
+    timestamp: new Date(Date.now() - 1000 * 60 * 2), // 2 minutes ago
+    completed: false,
+  },
+  {
+    id: "4",
+    tableId: "2",
+    reason: "Additional water please",
+    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+    completed: true,
+    completedAt: new Date(Date.now() - 1000 * 60 * 25), // 25 minutes ago
+  },
+  {
+    id: "5",
+    tableId: "4",
+    reason: "Need condiments",
+    timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 minutes ago
+    completed: true,
+    completedAt: new Date(Date.now() - 1000 * 60 * 40), // 40 minutes ago
+  },
+];
+
+// Demo tables
+export const demoTables = Array.from({ length: 12 }, (_, i) => ({
+  id: (i + 1).toString(),
+  number: i + 1,
+  section: i < 6 ? "Main Dining" : "Patio",
+  qrCode: `/table-${i + 1}-qr.png`, // Placeholder, would be real QR code images in production
+}));

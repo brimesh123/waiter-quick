@@ -1,272 +1,128 @@
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { 
-  MenuItem, 
+  Restaurant, 
   MenuCategory, 
-  WaiterRequest, 
-  Restaurant,
-  menuItemsStorage,
-  menuCategoriesStorage,
-  waiterRequestsStorage,
-  restaurantStorage
-} from '../utils/localStorage';
-import { initializeDemoData } from '../utils/demoData';
-import { toast } from 'sonner';
+  MenuItem, 
+  TableRequest, 
+  demoRestaurant, 
+  demoMenuCategories, 
+  demoMenuItems, 
+  demoTableRequests 
+} from '@/utils/demoData';
+import { getStorageItem, setStorageItem } from '@/utils/localStorage';
 
-interface RestaurantContextType {
-  // Restaurant data
-  restaurant: Restaurant | null;
-  updateRestaurant: (data: Partial<Restaurant>) => void;
-  
-  // Menu categories
-  categories: MenuCategory[];
-  addCategory: (category: Omit<MenuCategory, 'id'>) => void;
-  updateCategory: (id: string, data: Partial<Omit<MenuCategory, 'id'>>) => void;
-  deleteCategory: (id: string) => void;
-  
-  // Menu items
+type RestaurantContextType = {
+  restaurant: Restaurant;
+  updateRestaurantInfo: (info: Partial<Restaurant>) => void;
+  menuCategories: MenuCategory[];
   menuItems: MenuItem[];
-  addMenuItem: (item: Omit<MenuItem, 'id'>) => MenuItem;
-  updateMenuItem: (id: string, data: Partial<Omit<MenuItem, 'id'>>) => void;
-  deleteMenuItem: (id: string) => void;
-  
-  // Waiter requests
-  waiterRequests: WaiterRequest[];
-  activeRequests: WaiterRequest[];
-  requestWaiter: (tableNumber: string, type: WaiterRequest['type'], menuItemId?: string, note?: string) => void;
-  updateRequestStatus: (id: string, status: WaiterRequest['status']) => void;
-  
-  // Table-specific data
-  getRequestsForTable: (tableNumber: string) => WaiterRequest[];
-}
+  addMenuItem: (item: MenuItem) => void;
+  updateMenuItem: (id: string, updates: Partial<MenuItem>) => void;
+  removeMenuItem: (id: string) => void;
+  tableRequests: TableRequest[];
+  addTableRequest: (tableId: string, reason: string) => void;
+  markRequestComplete: (requestId: string) => void;
+  getTableNumber: (tableId: string) => number;
+};
 
 const RestaurantContext = createContext<RestaurantContextType | undefined>(undefined);
 
-// Generate a UUID
-const generateId = (): string => {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = (Math.random() * 16) | 0;
-    const v = c === 'x' ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-};
-
 export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [categories, setCategories] = useState<MenuCategory[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [waiterRequests, setWaiterRequests] = useState<WaiterRequest[]>([]);
-  const [activeRequests, setActiveRequests] = useState<WaiterRequest[]>([]);
+  // Load data from localStorage or use demo data as fallback
+  const [restaurant, setRestaurant] = useState<Restaurant>(
+    getStorageItem('restaurant', demoRestaurant)
+  );
+  
+  const [menuCategories, setMenuCategories] = useState<MenuCategory[]>(
+    getStorageItem('menuCategories', demoMenuCategories)
+  );
+  
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(
+    getStorageItem('menuItems', demoMenuItems)
+  );
+  
+  const [tableRequests, setTableRequests] = useState<TableRequest[]>(
+    getStorageItem('tableRequests', demoTableRequests)
+  );
 
-  // Initialize data from localStorage
+  // Update localStorage when state changes
   useEffect(() => {
-    // Initialize demo data if not already initialized
-    initializeDemoData();
-    
-    // Load data from localStorage
-    setRestaurant(restaurantStorage.get());
-    setCategories(menuCategoriesStorage.getAll());
-    setMenuItems(menuItemsStorage.getAll());
-    setWaiterRequests(waiterRequestsStorage.getAll());
-    setActiveRequests(waiterRequestsStorage.getActive());
-  }, []);
+    setStorageItem('restaurant', restaurant);
+  }, [restaurant]);
 
-  // Restaurant operations
-  const updateRestaurant = (data: Partial<Restaurant>) => {
-    if (!restaurant) return;
-    
-    const updatedRestaurant = {
-      ...restaurant,
-      ...data,
-    };
-    
-    restaurantStorage.save(updatedRestaurant);
-    setRestaurant(updatedRestaurant);
+  useEffect(() => {
+    setStorageItem('menuCategories', menuCategories);
+  }, [menuCategories]);
+
+  useEffect(() => {
+    setStorageItem('menuItems', menuItems);
+  }, [menuItems]);
+
+  useEffect(() => {
+    setStorageItem('tableRequests', tableRequests);
+  }, [tableRequests]);
+
+  // Restaurant info management
+  const updateRestaurantInfo = (info: Partial<Restaurant>) => {
+    setRestaurant(prev => ({ ...prev, ...info }));
   };
 
-  // Category operations
-  const addCategory = (category: Omit<MenuCategory, 'id'>) => {
-    const newCategory = {
-      ...category,
-      id: generateId(),
-    };
-    
-    menuCategoriesStorage.save(newCategory);
-    setCategories(prev => [...prev, newCategory].sort((a, b) => a.order - b.order));
-    toast.success(`Added category: ${category.name}`);
+  // Menu management
+  const addMenuItem = (item: MenuItem) => {
+    setMenuItems(prev => [...prev, item]);
   };
 
-  const updateCategory = (id: string, data: Partial<Omit<MenuCategory, 'id'>>) => {
-    const categoryIndex = categories.findIndex(cat => cat.id === id);
-    if (categoryIndex === -1) return;
-    
-    const updatedCategory = {
-      ...categories[categoryIndex],
-      ...data,
-    };
-    
-    menuCategoriesStorage.save(updatedCategory);
-    
-    setCategories(prev => {
-      const newCategories = [...prev];
-      newCategories[categoryIndex] = updatedCategory;
-      return newCategories.sort((a, b) => a.order - b.order);
-    });
+  const updateMenuItem = (id: string, updates: Partial<MenuItem>) => {
+    setMenuItems(prev => 
+      prev.map(item => item.id === id ? { ...item, ...updates } : item)
+    );
   };
 
-  const deleteCategory = (id: string) => {
-    // First check if there are menu items in this category
-    const itemsInCategory = menuItems.filter(item => item.category === id);
-    
-    if (itemsInCategory.length > 0) {
-      toast.error("Cannot delete category with menu items. Move or delete the items first.");
-      return;
-    }
-    
-    menuCategoriesStorage.delete(id);
-    setCategories(prev => prev.filter(cat => cat.id !== id));
-    toast.success("Category deleted");
-  };
-
-  // Menu item operations
-  const addMenuItem = (item: Omit<MenuItem, 'id'>) => {
-    const newItem = {
-      ...item,
-      id: generateId(),
-    };
-    
-    menuItemsStorage.save(newItem);
-    setMenuItems(prev => [...prev, newItem]);
-    toast.success(`Added menu item: ${item.name}`);
-    return newItem;
-  };
-
-  const updateMenuItem = (id: string, data: Partial<Omit<MenuItem, 'id'>>) => {
-    const itemIndex = menuItems.findIndex(item => item.id === id);
-    if (itemIndex === -1) return;
-    
-    const updatedItem = {
-      ...menuItems[itemIndex],
-      ...data,
-    };
-    
-    menuItemsStorage.save(updatedItem);
-    
-    setMenuItems(prev => {
-      const newItems = [...prev];
-      newItems[itemIndex] = updatedItem;
-      return newItems;
-    });
-  };
-
-  const deleteMenuItem = (id: string) => {
-    menuItemsStorage.delete(id);
+  const removeMenuItem = (id: string) => {
     setMenuItems(prev => prev.filter(item => item.id !== id));
-    toast.success("Menu item deleted");
   };
 
-  // Waiter request operations
-  const requestWaiter = (
-    tableNumber: string,
-    type: WaiterRequest['type'],
-    menuItemId?: string,
-    note?: string
-  ) => {
-    const newRequest: WaiterRequest = {
-      id: generateId(),
-      tableNumber,
-      timestamp: Date.now(),
-      status: 'pending',
-      type,
-      menuItemId,
-      note,
+  // Table request management
+  const addTableRequest = (tableId: string, reason: string) => {
+    const newRequest: TableRequest = {
+      id: Date.now().toString(),
+      tableId,
+      reason,
+      timestamp: new Date(),
+      completed: false,
     };
-    
-    waiterRequestsStorage.save(newRequest);
-    setWaiterRequests(prev => [newRequest, ...prev]);
-    setActiveRequests(prev => [newRequest, ...prev]);
-    
-    // Get item name if available
-    let successMessage = `Service requested for Table ${tableNumber}`;
-    if (menuItemId) {
-      const item = menuItems.find(item => item.id === menuItemId);
-      if (item) {
-        successMessage = `Requested waiter for ${item.name} at Table ${tableNumber}`;
-      }
-    }
-    
-    toast.success(successMessage);
-    return newRequest;
+    setTableRequests(prev => [...prev, newRequest]);
   };
 
-  const updateRequestStatus = (id: string, status: WaiterRequest['status']) => {
-    const requestIndex = waiterRequests.findIndex(req => req.id === id);
-    if (requestIndex === -1) return;
-    
-    const updatedRequest = {
-      ...waiterRequests[requestIndex],
-      status,
-    };
-    
-    waiterRequestsStorage.updateStatus(id, status);
-    
-    setWaiterRequests(prev => {
-      const newRequests = [...prev];
-      newRequests[requestIndex] = updatedRequest;
-      return newRequests;
-    });
-    
-    // Update active requests
-    if (status === 'completed') {
-      setActiveRequests(prev => prev.filter(req => req.id !== id));
-    } else {
-      setActiveRequests(prev => {
-        const activeIndex = prev.findIndex(req => req.id === id);
-        if (activeIndex === -1) return prev;
-        
-        const newActiveRequests = [...prev];
-        newActiveRequests[activeIndex] = updatedRequest;
-        return newActiveRequests;
-      });
-    }
-    
-    toast.success(`Request ${status === 'completed' ? 'completed' : 'updated'}`);
+  const markRequestComplete = (requestId: string) => {
+    setTableRequests(prev => 
+      prev.map(request => 
+        request.id === requestId 
+          ? { ...request, completed: true, completedAt: new Date() } 
+          : request
+      )
+    );
   };
 
-  // Table-specific operations
-  const getRequestsForTable = (tableNumber: string) => {
-    return waiterRequests.filter(req => req.tableNumber === tableNumber);
+  // Helper functions
+  const getTableNumber = (tableId: string): number => {
+    return parseInt(tableId, 10);
   };
 
-  // Refresh active requests periodically (every 30 seconds)
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setActiveRequests(waiterRequestsStorage.getActive());
-    }, 30000);
-    
-    return () => clearInterval(intervalId);
-  }, []);
-
+  // Context value
   const value = {
     restaurant,
-    updateRestaurant,
-    
-    categories,
-    addCategory,
-    updateCategory,
-    deleteCategory,
-    
+    updateRestaurantInfo,
+    menuCategories,
     menuItems,
     addMenuItem,
     updateMenuItem,
-    deleteMenuItem,
-    
-    waiterRequests,
-    activeRequests,
-    requestWaiter,
-    updateRequestStatus,
-    
-    getRequestsForTable,
+    removeMenuItem,
+    tableRequests,
+    addTableRequest,
+    markRequestComplete,
+    getTableNumber,
   };
 
   return (
@@ -276,7 +132,8 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   );
 };
 
-export const useRestaurant = (): RestaurantContextType => {
+// Custom hook to use the context
+export const useRestaurant = () => {
   const context = useContext(RestaurantContext);
   if (context === undefined) {
     throw new Error('useRestaurant must be used within a RestaurantProvider');
