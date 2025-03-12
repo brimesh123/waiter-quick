@@ -19,6 +19,8 @@ const QRCode: React.FC<QRCodeProps> = ({
   level = 'L',
   className,
 }) => {
+  console.log("Generating QR code with value:", value);
+  
   return (
     <div className={className}>
       <QRCodeLib

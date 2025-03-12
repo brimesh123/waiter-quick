@@ -40,7 +40,10 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   );
   
   const [menuItems, setMenuItems] = useState<MenuItem[]>(
-    getStorageItem('menuItems', demoMenuItems)
+    getStorageItem('menuItems', demoMenuItems.map(item => ({
+      ...item,
+      available: true // Ensure all menu items are available by default
+    })))
   );
   
   const [tableRequests, setTableRequests] = useState<TableRequest[]>(
@@ -71,6 +74,7 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   useEffect(() => {
     setStorageItem('tableRequests', tableRequests);
+    console.log("All table requests:", tableRequests);
   }, [tableRequests]);
 
   // Restaurant info management

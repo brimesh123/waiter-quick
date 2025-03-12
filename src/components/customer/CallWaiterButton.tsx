@@ -43,9 +43,9 @@ const CallWaiterButton: React.FC<CallWaiterButtonProps> = ({
     setStatus('loading');
     
     try {
-      // Send the request without artificial delay
+      console.log(`Calling waiter for table ${tableNumber}, type: ${requestType}, note: ${note}`);
+      // Send the request
       requestWaiter(tableNumber, requestType, undefined, note);
-      console.log(`Waiter request sent for table ${tableNumber}, type: ${requestType}, note: ${note}`);
       
       setStatus('success');
       

@@ -20,6 +20,15 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
     console.log("Menu component rendering with tableNumber:", tableNumber);
     console.log("Menu component categories:", categories);
     console.log("Menu component menuItems:", menuItems);
+    
+    // Extra logging to debug
+    if (!Array.isArray(categories) || categories.length === 0) {
+      console.warn("Categories missing or empty in Menu component");
+    }
+    
+    if (!Array.isArray(menuItems) || menuItems.length === 0) {
+      console.warn("Menu items missing or empty in Menu component");
+    }
   }, [tableNumber, categories, menuItems]);
 
   // Handle search
@@ -34,8 +43,13 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
   // Organize menu items by category
   const itemsByCategory = categories.map((category) => ({
     category,
-    items: menuItems.filter((item) => item.category === category.id && item.available),
+    items: menuItems.filter((item) => item.category === category.id),
   }));
+
+  const handleRequestWaiter = (itemId: string, itemName: string) => {
+    console.log(`Requesting waiter for table ${tableNumber}, item ${itemId}, name ${itemName}`);
+    requestWaiter(tableNumber, 'service', itemId, `Question about ${itemName}`);
+  };
 
   if (categories.length === 0) {
     return (
@@ -44,10 +58,6 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
       </div>
     );
   }
-
-  const handleRequestWaiter = (itemId: string, itemName: string) => {
-    requestWaiter(tableNumber, 'service', itemId, `Question about ${itemName}`);
-  };
 
   return (
     <div className="w-full">
@@ -149,7 +159,7 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
 
           {categories.map((category) => {
             const categoryItems = menuItems.filter(
-              (item) => item.category === category.id && item.available
+              (item) => item.category === category.id
             );
 
             return (

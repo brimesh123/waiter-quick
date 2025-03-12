@@ -22,6 +22,8 @@ const Customer = () => {
     if (tableId) {
       setCurrentTableId(tableId);
       console.log("Table ID set from URL param:", tableId);
+    } else {
+      console.log("No table ID in URL, using default:", currentTableId);
     }
   }, [tableId]);
 
@@ -29,6 +31,15 @@ const Customer = () => {
   useEffect(() => {
     console.log("Customer view - Categories:", categories);
     console.log("Customer view - Menu Items:", menuItems);
+    
+    // Additional logging to verify data
+    if (categories.length === 0) {
+      console.warn("No categories available in the customer view");
+    }
+    
+    if (menuItems.length === 0) {
+      console.warn("No menu items available in the customer view");
+    }
   }, [categories, menuItems]);
 
   return (
