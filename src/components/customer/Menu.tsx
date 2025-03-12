@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRestaurant } from '@/context/RestaurantContext';
 import MenuCategory from './MenuCategory';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,11 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
   const { categories, menuItems } = useRestaurant();
   const [searchQuery, setSearchQuery] = useState('');
 
-  console.log("Menu component categories:", categories);
-  console.log("Menu component menuItems:", menuItems);
+  useEffect(() => {
+    console.log("Menu component rendering with tableNumber:", tableNumber);
+    console.log("Menu component categories:", categories);
+    console.log("Menu component menuItems:", menuItems);
+  }, [tableNumber, categories, menuItems]);
 
   // Handle search
   const filteredItems = searchQuery
@@ -101,7 +104,8 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
                               variant="secondary"
                               size="sm"
                               onClick={() => {
-                                /* Call waiter functionality will be implemented */
+                                const { requestWaiter } = useRestaurant();
+                                requestWaiter(tableNumber, 'service', item.id, `Question about ${item.name}`);
                               }}
                             >
                               Request waiter

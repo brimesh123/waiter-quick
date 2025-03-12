@@ -22,9 +22,8 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, tableNumber }) => {
     setRequestStatus('loading');
     
     try {
-      // Send the request without artificial delay
+      console.log(`Requesting waiter for table ${tableNumber}, item ${item.id}`);
       requestWaiter(tableNumber, 'service', item.id, `Question about ${item.name}`);
-      console.log(`Waiter requested for table ${tableNumber}, item ${item.id}`);
       
       setRequestStatus('success');
       
@@ -49,12 +48,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, tableNumber }) => {
     }
   };
 
-  const imageLoaded = item.image !== undefined;
-
   return (
     <Card className="overflow-hidden border border-border">
       <div className="flex flex-col md:flex-row">
-        {imageLoaded && (
+        {item.image && (
           <div className="w-full md:w-1/3 h-40 md:h-auto">
             <img
               src={item.image}
@@ -67,7 +64,7 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, tableNumber }) => {
         
         <CardContent className={cn(
           "flex-1 flex flex-col p-6",
-          !imageLoaded && "md:w-full"
+          !item.image && "md:w-full"
         )}>
           <div className="flex justify-between items-start mb-2">
             <h3 className="font-semibold text-lg">{item.name}</h3>

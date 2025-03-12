@@ -10,6 +10,8 @@ import NotFound from "@/pages/NotFound";
 import "./App.css";
 
 function App() {
+  console.log("App rendering with routes");
+  
   return (
     <RestaurantProvider>
       <Router>
