@@ -23,8 +23,8 @@ function App() {
           <Route path="/waiter" element={<Waiter />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <Toaster />
       </Router>
-      <Toaster />
     </RestaurantProvider>
   );
 }

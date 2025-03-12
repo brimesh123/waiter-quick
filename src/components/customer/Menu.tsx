@@ -13,7 +13,7 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
-  const { categories, menuItems } = useRestaurant();
+  const { categories, menuItems, requestWaiter } = useRestaurant();
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
@@ -44,6 +44,10 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
       </div>
     );
   }
+
+  const handleRequestWaiter = (itemId: string, itemName: string) => {
+    requestWaiter(tableNumber, 'service', itemId, `Question about ${itemName}`);
+  };
 
   return (
     <div className="w-full">
@@ -103,10 +107,7 @@ const Menu: React.FC<MenuProps> = ({ tableNumber }) => {
                             <Button
                               variant="secondary"
                               size="sm"
-                              onClick={() => {
-                                const { requestWaiter } = useRestaurant();
-                                requestWaiter(tableNumber, 'service', item.id, `Question about ${item.name}`);
-                              }}
+                              onClick={() => handleRequestWaiter(item.id, item.name)}
                             >
                               Request waiter
                             </Button>

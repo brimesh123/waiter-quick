@@ -14,7 +14,7 @@ import { useRestaurant } from "@/context/RestaurantContext";
 const Customer = () => {
   const { tableId } = useParams();
   const { toast } = useToast();
-  const { restaurant, getTableNumber } = useRestaurant();
+  const { restaurant, getTableNumber, categories, menuItems } = useRestaurant();
   const [currentTableId, setCurrentTableId] = useState(tableId || "1");
   
   useEffect(() => {
@@ -27,10 +27,9 @@ const Customer = () => {
 
   // Log the categories and menu items when the component mounts
   useEffect(() => {
-    const { categories, menuItems } = useRestaurant();
     console.log("Customer view - Categories:", categories);
     console.log("Customer view - Menu Items:", menuItems);
-  }, []);
+  }, [categories, menuItems]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
