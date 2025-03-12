@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { ChevronLeft, Menu, X } from 'lucide-react';
+import { ChevronLeft, Menu, X, Store } from 'lucide-react';
 import { useRestaurant } from '@/context/RestaurantContext';
 import FadeIn from '@/components/ui/FadeIn';
 
@@ -34,6 +34,7 @@ export const Header: React.FC<HeaderProps> = ({ backLink, title, subtitle }) => 
     { name: 'Customer View', path: '/customer' },
     { name: 'Waiter Dashboard', path: '/waiter' },
     { name: 'Admin', path: '/admin' },
+    { name: 'Restaurants', path: '/restaurants' },
   ];
 
   const isActive = (path: string) => location.pathname === path;
@@ -66,10 +67,10 @@ export const Header: React.FC<HeaderProps> = ({ backLink, title, subtitle }) => 
                 />
               ) : (
                 <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold mr-3">
-                  {restaurant?.name.substring(0, 1) || 'W'}
+                  {restaurant?.name.substring(0, 1) || 'T'}
                 </div>
               )}
-              <span className="font-semibold text-lg">{title || restaurant?.name || 'Waiter Quick'}</span>
+              <span className="font-semibold text-lg">{title || restaurant?.name || 'TableWave'}</span>
               {subtitle && (
                 <span className="ml-2 text-sm text-muted-foreground">
                   {subtitle}
@@ -119,10 +120,10 @@ export const Header: React.FC<HeaderProps> = ({ backLink, title, subtitle }) => 
                   />
                 ) : (
                   <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold mr-3">
-                    {restaurant?.name.substring(0, 1) || 'W'}
+                    {restaurant?.name.substring(0, 1) || 'T'}
                   </div>
                 )}
-                <span className="font-semibold text-lg">{restaurant?.name || 'Waiter Quick'}</span>
+                <span className="font-semibold text-lg">{restaurant?.name || 'TableWave'}</span>
               </Link>
               <button
                 onClick={() => setMobileMenuOpen(false)}

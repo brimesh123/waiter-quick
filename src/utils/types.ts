@@ -13,12 +13,16 @@ export interface Restaurant {
     twitter?: string;
     google?: string;
   };
+  tables?: number;
+  active?: boolean;
+  createdAt?: Date;
 }
 
 export interface MenuCategory {
   id: string;
   name: string;
   description?: string;
+  restaurantId: string;
 }
 
 export interface MenuItem {
@@ -29,6 +33,7 @@ export interface MenuItem {
   category: string;
   image?: string;
   available: boolean;
+  restaurantId: string;
 }
 
 export interface TableRequest {
@@ -43,6 +48,16 @@ export interface TableRequest {
   status?: 'pending' | 'acknowledged' | 'completed';
   type?: 'service' | 'bill' | 'order';
   tableNumber?: string;
+  restaurantId: string;
 }
 
 export type WaiterRequest = TableRequest;
+
+export interface Waiter {
+  id: string;
+  name: string;
+  email?: string;
+  restaurantId: string;
+  active?: boolean;
+}
+

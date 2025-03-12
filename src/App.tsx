@@ -6,6 +6,7 @@ import Index from "@/pages/Index";
 import Customer from "@/pages/Customer";
 import Admin from "@/pages/Admin";
 import Waiter from "@/pages/Waiter";
+import Restaurants from "@/pages/Restaurants";
 import NotFound from "@/pages/NotFound";
 import "./App.css";
 
@@ -21,6 +22,7 @@ function App() {
           <Route path="/customer/:tableId" element={<Customer />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/waiter" element={<Waiter />} />
+          <Route path="/restaurants" element={<Restaurants />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <Toaster />
