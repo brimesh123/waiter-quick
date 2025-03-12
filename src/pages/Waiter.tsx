@@ -18,7 +18,7 @@ const Waiter = () => {
 
   useEffect(() => {
     // Filter requests into active and completed
-    console.log("All table requests:", tableRequests);
+    console.log("Waiter page - All table requests:", tableRequests);
     setActiveRequests(tableRequests.filter(req => !req.completed));
     setCompletedRequests(tableRequests.filter(req => req.completed));
   }, [tableRequests]);

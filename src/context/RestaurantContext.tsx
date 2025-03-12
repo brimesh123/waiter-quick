@@ -42,13 +42,34 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [menuItems, setMenuItems] = useState<MenuItem[]>(
     getStorageItem('menuItems', demoMenuItems.map(item => ({
       ...item,
-      available: true // Ensure all menu items are available by default
+      available: true, // Ensure all menu items are available by default
+      image: item.image || getMenuItemDefaultImage(item.category) // Add default images based on category
     })))
   );
   
   const [tableRequests, setTableRequests] = useState<TableRequest[]>(
     getStorageItem('tableRequests', demoTableRequests)
   );
+
+  // Helper function to get default images based on category
+  function getMenuItemDefaultImage(categoryId: string): string {
+    switch(categoryId) {
+      case 'appetizers':
+        return 'https://images.unsplash.com/photo-1676037150408-4b6ed7931c8e?q=80&w=1600&auto=format&fit=crop';
+      case 'pasta':
+        return 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?q=80&w=1600&auto=format&fit=crop';
+      case 'pizza':
+        return 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1600&auto=format&fit=crop';
+      case 'main-courses':
+        return 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1600&auto=format&fit=crop';
+      case 'desserts':
+        return 'https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=1600&auto=format&fit=crop';
+      case 'drinks':
+        return 'https://images.unsplash.com/photo-1551538827-9c037cb4f32a?q=80&w=1600&auto=format&fit=crop';
+      default:
+        return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=1600&auto=format&fit=crop';
+    }
+  }
 
   // Log initial data
   useEffect(() => {
@@ -84,7 +105,12 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // Menu management
   const addMenuItem = (item: MenuItem) => {
-    setMenuItems(prev => [...prev, item]);
+    // Add a default image if none provided
+    const itemWithImage = {
+      ...item,
+      image: item.image || getMenuItemDefaultImage(item.category)
+    };
+    setMenuItems(prev => [...prev, itemWithImage]);
   };
 
   const updateMenuItem = (id: string, updates: Partial<MenuItem>) => {
@@ -114,9 +140,12 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   const requestWaiter = (tableId: string, type: 'service' | 'bill' | 'order', menuItemId?: string, note?: string) => {
+    // Ensure tableId is a string
+    const tableIdStr = String(tableId);
+    
     const newRequest: TableRequest = {
       id: Date.now().toString(),
-      tableId,
+      tableId: tableIdStr,
       reason: type,
       menuItemId,
       note,
@@ -124,7 +153,7 @@ export const RestaurantProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       completed: false,
       status: 'pending',
       type,
-      tableNumber: tableId
+      tableNumber: tableIdStr
     };
     console.log("Requesting waiter:", newRequest);
     setTableRequests(prev => [...prev, newRequest]);

@@ -44,8 +44,11 @@ const CallWaiterButton: React.FC<CallWaiterButtonProps> = ({
     
     try {
       console.log(`Calling waiter for table ${tableNumber}, type: ${requestType}, note: ${note}`);
+      // Ensure tableNumber is a string
+      const tableId = String(tableNumber);
+      
       // Send the request
-      requestWaiter(tableNumber, requestType, undefined, note);
+      requestWaiter(tableId, requestType, undefined, note);
       
       setStatus('success');
       

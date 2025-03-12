@@ -20,7 +20,7 @@ const Customer = () => {
   useEffect(() => {
     // If table ID is provided in URL, use it
     if (tableId) {
-      setCurrentTableId(tableId);
+      setCurrentTableId(String(tableId));
       console.log("Table ID set from URL param:", tableId);
     } else {
       console.log("No table ID in URL, using default:", currentTableId);

@@ -61,6 +61,23 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
     }
   };
 
+  // Get request reason based on type
+  const getRequestReason = () => {
+    if (request.type) {
+      switch (request.type) {
+        case 'service':
+          return 'Service Request';
+        case 'bill':
+          return 'Bill Request';
+        case 'order':
+          return 'Additional Order';
+        default:
+          return request.reason || 'Service Request';
+      }
+    }
+    return request.reason || 'Service Request';
+  };
+
   // Handle status update
   const handleUpdateStatus = (newStatus: 'pending' | 'acknowledged' | 'completed') => {
     setIsLoading(true);
@@ -71,6 +88,8 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
       setIsLoading(false);
     }, 500);
   };
+
+  const tableDisplay = request.tableNumber || request.tableId || 'Unknown';
 
   return (
     <Card className={cn(
@@ -86,7 +105,7 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="font-medium flex items-center">
-                Table {request.tableNumber || request.tableId}
+                Table {tableDisplay}
                 {request.status === 'pending' && (
                   <span className="inline-block h-2 w-2 rounded-full bg-amber-500 animate-pulse ml-2"></span>
                 )}
@@ -107,8 +126,7 @@ const RequestCard: React.FC<RequestCardProps> = ({ request }) => {
             </div>
             <div>
               <h4 className="font-medium">
-                {request.type === 'service' ? 'Service Request' : 
-                 request.type === 'bill' ? 'Bill Request' : 'Additional Order'}
+                {getRequestReason()}
               </h4>
               {menuItem && (
                 <p className="text-sm">For: <span className="font-medium">{menuItem.name}</span></p>
